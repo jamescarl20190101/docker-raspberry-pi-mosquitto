@@ -3,7 +3,7 @@ version: '3.4'
 services:
 
   mqtt:
-    image: ernestgwilsonii/docker-raspberry-pi-mosquitto:1.5.3 
+    image: jamescarl20190101/docker-raspberry-pi-mosquitto:1.6.7
     hostname: mosquitto
     ports:
       # MQTT unencrypted TCP 1883
@@ -30,9 +30,10 @@ services:
       - mqtt-net1
     volumes:
       - type: bind
-        source: /opt/mqtt
+        source: /mnt/mqtt
         target: /etc/mosquitto
     deploy:
+      mode: global
       labels:
         local.description: "Mosquitto MQTT"
       restart_policy:
