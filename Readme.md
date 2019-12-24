@@ -13,24 +13,31 @@ MOSQUITTO_VERSION=$(cat version.txt)
 echo $MOSQUITTO_VERSION
 export MOSQUITTO_VERSION=$MOSQUITTO_VERSION
 
-# Docker build
-#time docker build --build-arg MOSQUITTO_VERSION=$MOSQUITTO_VERSION --no-cache -t ernestgwilsonii/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION -f Dockerfile.armhf .
-time docker build --build-arg MOSQUITTO_VERSION=$MOSQUITTO_VERSION -t ernestgwilsonii/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION -f Dockerfile.armhf .
+###############################################################################
+# Build Image #
+####################
+MOSQUITTO_VERSION=$(cat version.txt)
+echo $MOSQUITTO_VERSION
+export MOSQUITTO_VERSION=$MOSQUITTO_VERSION
+
+#time docker build --build-arg MOSQUITTO_VERSION=$MOSQUITTO_VERSION --no-cache -t jamescarl20190101/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION -f Dockerfile.armhf .
+time docker build --build-arg MOSQUITTO_VERSION=$MOSQUITTO_VERSION -t jamescarl20190101/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION -f Dockerfile.armhf .
 
 # List images and examine sizes
 docker images
 
 # Verify 
-docker run -it -p 1883:1883 ernestgwilsonii/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION
+docker run -it -p 1883:1883 jamescarl20190101/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION
 # From another ssh session:
 #docker ps
 
 # Upload to Docker Hub
 docker login
-docker push ernestgwilsonii/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION
+docker push jamescarl20190101/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION
 # Update the latest tag to point to the updated version
-docker tag ernestgwilsonii/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION ernestgwilsonii/docker-raspberry-pi-mosquitto:latest
-docker push ernestgwilsonii/docker-raspberry-pi-mosquitto:latest
+docker tag jamescarl20190101/docker-raspberry-pi-mosquitto:$MOSQUITTO_VERSION jamescarl20190101/docker-raspberry-pi-mosquitto:latest
+docker push jamescarl20190101/docker-raspberry-pi-mosquitto:latest
+
 # REF: https://hub.docker.com/r/ernestgwilsonii/docker-raspberry-pi-mosquitto
 ###############################################################################
 
@@ -39,22 +46,24 @@ docker push ernestgwilsonii/docker-raspberry-pi-mosquitto:latest
 # First time setup #
 ####################
 # Create bind mounted directies
-sudo mkdir -p /opt/mqtt/config
-sudo mkdir -p /opt/mqtt/config/conf.d
-sudo mkdir -p /opt/mqtt/config/certs
-sudo mkdir -p /opt/mqtt/data
-sudo mkdir -p /opt/mqtt/log
-sudo chmod -R a+rw /opt/mqtt
-cp mosquitto.conf /opt/mqtt/config/mosquitto.conf
-cp TCP_1883_Unencrypted_MQTT.conf /opt/mqtt/config/conf.d/TCP_1883_Unencrypted_MQTT.conf
-cp TCP_8883_Encrypted_MQTT.conf /opt/mqtt/config/conf.d/TCP_8883_Encrypted_MQTT.conf
-cp TCP_9001_Unencrypted_Websockets.conf /opt/mqtt/config/conf.d/TCP_9001_Unencrypted_Websockets.conf
-cp TCP_9883_Encrypted_Websockets.conf /opt/mqtt/config/conf.d/TCP_9883_Encrypted_Websockets.conf
-cp generate-CA.sh /opt/mqtt/config/certs/generate-CA.sh
-cp passwd /opt/mqtt/config/passwd
-cp aclfile /opt/mqtt/config/aclfile
-sudo chmod +x /opt/mqtt/config/certs/generate-CA.sh
-sudo chown -R 1000:1000 /opt/mqtt
+./bootstrap.sh
+
+#sudo mkdir -p /mnt/mqtt/config
+#sudo mkdir -p /mnt/mqtt/config/conf.d
+#sudo mkdir -p /mnt/mqtt/config/certs
+#sudo mkdir -p /mnt/mqtt/data
+#sudo mkdir -p /mnt/mqtt/log
+#sudo chmod -R a+rw /mnt/mqtt
+#cp mosquitto.conf /mnt/mqtt/config/mosquitto.conf
+#cp TCP_1883_Unencrypted_MQTT.conf /mnt/mqtt/config/conf.d/TCP_1883_Unencrypted_MQTT.conf
+#cp TCP_8883_Encrypted_MQTT.conf /mnt/mqtt/config/conf.d/TCP_8883_Encrypted_MQTT.conf
+#cp TCP_9001_Unencrypted_Websockets.conf /mnt/mqtt/config/conf.d/TCP_9001_Unencrypted_Websockets.conf
+#cp TCP_9883_Encrypted_Websockets.conf /mnt/mqtt/config/conf.d/TCP_9883_Encrypted_Websockets.conf
+#cp generate-CA.sh /mnt/mqtt/config/certs/generate-CA.sh
+#cp passwd /mnt/mqtt/config/passwd
+#cp aclfile /mnt/mqtt/config/aclfile
+#sudo chmod +x /mnt/mqtt/config/certs/generate-CA.sh
+#sudo chown -R 1000:1000 /mnt/mqtt
 
 
 ##########
